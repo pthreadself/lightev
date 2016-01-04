@@ -103,6 +103,7 @@ typedef struct lightev_eventloop {
 } lightev_eventloop;
 
 /* Prototypes */
+lightev_eventloop *lightev_eventloop_create(int setsize);
 void lightev_eventloop_stop(lightev_eventloop *eventLoop);
 int lightev_file_event_add(lightev_eventloop *eventLoop, int fd, int mask,
     lightev_io_function *proc, void *clientData);
