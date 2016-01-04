@@ -54,12 +54,9 @@ struct lightev_eventloop;
 
 /* Types and data structures */
 
-
-
-
 typedef void lightev_io_function(struct lightev_eventloop *eventLoop, int fd, void *clientData, int mask);
 typedef int lightev_timer_function(struct lightev_eventloop *eventloop, long long id, void *clientData);
-typedef void aeEventFinalizerProc(struct lightev_eventloop *eventLoop, void *clientData);
+typedef void lightev_event_finalizer_function(struct lightev_eventloop *eventLoop, void *clientData);
 typedef void aeBeforeSleepProc(struct lightev_eventloop *eventLoop);
 
 /* File event structure */
@@ -76,7 +73,7 @@ typedef struct lightev_time_event {
     long when_sec; /* seconds */
     long when_ms; /* milliseconds */
     lightev_timer_function *timeout_action;
-    aeEventFinalizerProc *finalizerProc;
+    lightev_event_finalizer_function *finalizerProc;
     void *clientData;
     struct lightev_time_event *next;
 } lightev_time_event;
@@ -98,7 +95,7 @@ typedef struct lightev_eventloop {
     lightev_time_event *timeEventHead;
     int stop;
     //void *apidata; /* This is used for polling API specific data */
-    
+
     int epfd; /* epoll fd */
     struct epoll_event *events;
 
@@ -108,12 +105,12 @@ typedef struct lightev_eventloop {
 /* Prototypes */
 void lightev_eventloop_stop(lightev_eventloop *eventLoop);
 int lightev_file_event_add(lightev_eventloop *eventLoop, int fd, int mask,
-        lightev_io_function *proc, void *clientData);
+    lightev_io_function *proc, void *clientData);
 void lightev_file_event_del(lightev_eventloop *eventLoop, int fd, int mask);
 int lightev_file_event_mask(lightev_eventloop *eventLoop, int fd);
 long long lightev_timer_event_add(lightev_eventloop *eventLoop, long long milliseconds,
-        lightev_timer_function *proc, void *clientData,
-        aeEventFinalizerProc *finalizerProc);
+    lightev_timer_function *proc, void *clientData,
+    lightev_event_finalizer_function *finalizerProc);
 int lightev_timer_event_del(lightev_eventloop *eventLoop, long long id);
 int lightev_event_dispatch(lightev_eventloop *eventLoop, int flags);
 int aeWait(int fd, int mask, long long milliseconds);
@@ -122,5 +119,3 @@ char *aeGetApiName(void);
 void aeSetBeforeSleepProc(lightev_eventloop *eventLoop, aeBeforeSleepProc *beforesleep);
 
 #endif
-
-
