@@ -43,6 +43,16 @@
 #include "lightev.h"
 #include "mm.h"
 
+/* forward declaration */
+
+static int backend_add_event(lightev_eventloop *eventloop, int fd, int mask);
+static void backend_del_event(lightev_eventloop *eventloop, int fd, int delmask);
+static int backend_epoll_event(lightev_eventloop *eventloop, struct timeval *tvp);
+static void get_time(long *seconds, long *milliseconds);
+static void add_ms_to_now(long long milliseconds, long *sec, long *ms);
+static lightev_time_event *find_nearest_timer(lightev_eventloop *eventloop);
+static int process_timer_events(lightev_eventloop *eventloop);
+
 /* API implementations: event loop operations  */
 lightev_eventloop *lightev_eventloop_create(int setsize) {
     lightev_eventloop *eventloop;
@@ -286,6 +296,7 @@ void lightev_run(lightev_eventloop *eventloop) {
         lightev_event_dispatch(eventloop, AE_ALL_EVENTS);
     }
 }
+
 
 /* internal implementations */
 
